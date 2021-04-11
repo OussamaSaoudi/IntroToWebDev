@@ -1,61 +1,72 @@
-import React from 'react'
-const Header = (props) => {
+import React, { useState } from 'react'
+const Button = ({handleClick, text}) => {
   return (
-    <>
-      <p>{props.course.name}</p>
-    </> 
+      <button onClick={handleClick}>
+        {text}
+      </button>
   )
 }
-const Content = (props) => {
+const Statistic = (props) => {
   return (
-    <>
-      <Part part={props.course.parts[0].name} exercises={props.course.parts[0].exercises} />
-      <Part part={props.course.parts[1].name} exercises={props.course.parts[1].exercises} />
-      <Part part={props.course.parts[2].name} exercises={props.course.parts[2].exercises} />
-    </> 
+      <tr>
+        <td>{props.text} </td>
+        <td>{props.value}</td>
+      </tr>
   )
 }
-const Part = (props) => {
+const Statistics = (props) => {
+  if (props.good + props.neutral + props.bad === 0) {
+    return (
+      <div>
+        <h1>statistics</h1>
+        <div>
+          <p>No feedback given</p>
+        </div>
+      </div>
+    )
+  }
   return (
-    <>
-      <p>
-        {props.part} {props.exercises}
-      </p>
-    </>
+    <div>
+      <h1>statistics</h1>
+      <div>
+        <table>
+          <tbody>
+            <Statistic text="good" value={props.good}></Statistic>
+            <Statistic text="neutral" value={props.neutral}></Statistic>
+            <Statistic text="bad" value={props.bad}></Statistic>
+            <tr>
+              <td>all</td>
+              <td>{props.bad + props.neutral + props.good}</td>
+            </tr>
+            <tr>
+              <td>average</td>
+              <td>{(props.good - props.bad)/(props.good+props.bad+props.neutral)}</td>
+            </tr>
+            <tr>
+              <td>positive </td>
+              <td>{100*(props.good)/(props.good+props.bad+props.neutral)} %</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   )
-}
-const Total = (props) => {
-  return (
-    <>
-      <p>Number of exercises {props.course.parts[0].exercises + props.course.parts[1].exercises + props.course.parts[2].exercises}</p>
-    </>
-  )
-
 }
 const App = () => {
-  const course = {
-    name: 'Half Stack application development',
-    parts: [
-      {
-        name: 'Fundamentals of React',
-        exercises: 10
-      },
-      {
-        name: 'Using props to pass data',
-        exercises: 7
-      },
-      {
-        name: 'State of a component',
-        exercises: 14
-      }
-    ]
-  }
+  // save clicks of each button to its own state
+  const [good, setGood] = useState(0)
+  const [neutral, setNeutral] = useState(0)
+  const [bad, setBad] = useState(0)
 
   return (
     <div>
-      <Header course={course} />
-      <Content course={course} />
-      <Total course={course} />
+      <h1>give feedback</h1>
+      <div>
+        <Button handleClick={() =>setGood(good+1)} text="good"></Button>
+        <Button handleClick={() =>setNeutral(neutral+1)} text="neutral"></Button>
+        <Button handleClick={() =>setBad(bad+1)} text="bad"></Button>
+      </div>
+      <Statistics good={good} bad={bad} neutral={neutral}></Statistics>
     </div>
   )
 }
