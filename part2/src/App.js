@@ -1,15 +1,20 @@
 import React from 'react'
 
 const Part = ({part}) => (
-  <li>{part.name}</li>
+  <li>{part.name} {part.exercises}</li>
 )
-const Content = ({partList}) => (
-  <ul>
-    {partList.map(part => 
-      <Part part={part} key={part.id}/> 
-    )}
-  </ul>
-)
+const Content = ({partList}) => {
+  return (
+    <div>
+      <ul>
+        {partList.map(part => 
+          <Part part={part} key={part.id}/> 
+        )}
+      </ul>
+      <b>total of {partList.reduce((total,part) => total + part.exercises, 0)} exercises</b>
+    </div>
+  )
+}
 const Course = ({course}) => (
   <div>
     <h1>{course.name}</h1>
