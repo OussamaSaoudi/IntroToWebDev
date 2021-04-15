@@ -1,59 +1,72 @@
 import React, { useEffect, useState } from 'react'
-import Note from './components/Note'
 import axios from 'axios'
 
+const PrintData = ({countryArray}) => {
+  if(countryArray.length > 10) {
+    return (
+      <p>Too many matches, specify another filter</p>
+    )
+  } else if (countryArray.length === 0) {
+    return (
+      <p>Nothing Found</p>
+    )
+  } else if (countryArray.length > 1) {
+    return (
+      <ul>
+        {countryArray.map(country =>
+          <p>{country.name}</p>
+          )}
+      </ul>
+    )
+  } else {
+    let country = countryArray[0]
+    return (
+      <div>
+        <h1>{country.name}</h1>
+        <p>capital {country.capital}</p>
+        <p>population {country.population}</p>
+        <h2>languages</h2>
+        <ul>
+          {country.languages.map(language => <li>{language.name}</li>)}
+        </ul>
+        <img src={country.flag} alt="None found" />
+      </div>
+    )
+  }
+}
 const App = () => {
-  const [notes,setNotes] = useState([])
-
-  const [newNote, setNewNote] = useState('')
-  const [showAll, setShowAll] = useState(true)
-
+  const [allCountries, setAll] = useState([])
+  const [countries, setCountries] = useState([])
+  const [searchBar, search] = useState('')
   useEffect(() => {
-    console.log('effect')
     axios
-      .get('http://localhost:3001/notes')
+      .get('https://restcountries.eu/rest/v2/all')
       .then(response => {
-        console.log('promise fulfilled')
-        setNotes(response.data)
+        setAll(response.data)
       })
   }, [])
-  console.log('render', notes.length, 'notes')
-  const addNote = (event) => {
+  const findCountry = (name) => (allCountries.filter(country => country.name.toLowerCase().includes(name.toLowerCase())))
+
+  const findCountries = (event) => {
     event.preventDefault()
-    const noteObject = {
-      content: newNote,
-      date: new Date().toISOString(),
-      important: Math.random() <0.5,
-      id: notes.length+1
-    }
-    setNotes(notes.concat(noteObject))
-    setNewNote('')
+    setCountries(findCountry(searchBar))
+    search('')
   }
-
-  const handleNoteChange = (event) => {
-    console.log(event.target.value)
-    setNewNote(event.target.value)
+  const handleSearchBar = (event) => {
+    search(event.target.value)
   }
-
-  const notesToShow = showAll ? notes : notes.filter(note => note.important)
   return (
     <div>
-      <h1>Notes</h1>
-      <div>
-        <button onClick={() => setShowAll(!showAll)}>
-          show {showAll ? "important" : "all"}
-        </button>
-      </div>
-      <ul>
-        {notesToShow.map(note => 
-          <Note key={note.id} note={note} />
-        )}
-      </ul>
-      <form onSubmit={addNote}>
-        <input value={newNote} onChange={handleNoteChange}/>
-        <button type="submit">save</button>
-      </form> 
+      <form onSubmit={findCountries}>
+        <input
+          value={searchBar}
+          onChange={handleSearchBar}
+          />
+        <button type="submit">search</button>
+      </form>
+      <PrintData countryArray={countries}/>
     </div>
+
   )
 }
 
