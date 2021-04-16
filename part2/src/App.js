@@ -1,7 +1,37 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 
-const PrintData = ({countryArray}) => {
+const ShowCountry = ({country}) => {
+  return (
+    <div>
+      <h1>{country.name}</h1>
+      <p>capital {country.capital}</p>
+      <p>population {country.population}</p>
+      <h2>languages</h2>
+      <ul>
+        {country.languages.map((language, i) => <li key={i}>{language.name}</li>)}
+      </ul>
+      <img src={country.flag} alt="None found" />
+    </div>
+  )
+}
+const MultiCountry = ({countryArray, setCountries}) => {
+  return (
+    <div>
+        {countryArray.map((country, i) =>
+            <div>
+              <p>{country.name}</p> 
+              <button onClick={
+                () => {
+                  setCountries([country])
+                }
+              }>show</button>
+            </div>
+          )}
+    </div>
+  )
+}
+const PrintData = ({countryArray, setCountries}) => {
   if(countryArray.length > 10) {
     return (
       <p>Too many matches, specify another filter</p>
@@ -11,27 +41,9 @@ const PrintData = ({countryArray}) => {
       <p>Nothing Found</p>
     )
   } else if (countryArray.length > 1) {
-    return (
-      <ul>
-        {countryArray.map(country =>
-          <p>{country.name}</p>
-          )}
-      </ul>
-    )
+    return <MultiCountry countryArray={countryArray} setCountries={setCountries}/>
   } else {
-    let country = countryArray[0]
-    return (
-      <div>
-        <h1>{country.name}</h1>
-        <p>capital {country.capital}</p>
-        <p>population {country.population}</p>
-        <h2>languages</h2>
-        <ul>
-          {country.languages.map(language => <li>{language.name}</li>)}
-        </ul>
-        <img src={country.flag} alt="None found" />
-      </div>
-    )
+    return <ShowCountry country={countryArray[0]}/>
   }
 }
 const App = () => {
@@ -64,7 +76,7 @@ const App = () => {
           />
         <button type="submit">search</button>
       </form>
-      <PrintData countryArray={countries}/>
+      <PrintData countryArray={countries} setCountries={setCountries}/>
     </div>
 
   )
