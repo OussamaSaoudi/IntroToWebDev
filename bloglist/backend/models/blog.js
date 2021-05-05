@@ -6,9 +6,12 @@ const blogSchema = new mongoose.Schema({
     url: String,
     likes: Number
 })
-
-// eslint-disable-next-line no-undef
-const mongoURL = process.env.MONGODB_URI
-mongoose.connect(mongoURL, {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true})
+blogSchema.set('toJSON', {
+    transform: (document, returnedObject) => {
+        returnedObject.id = returnedObject._id.toString()
+        delete returnedObject._id
+        delete returnedObject.__v
+    }
+})
 
 module.exports = mongoose.model('Blog', blogSchema)
