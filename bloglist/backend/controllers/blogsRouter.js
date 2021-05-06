@@ -9,15 +9,48 @@ blogsRouter.get('/', (request, response) => {
             response.json(blogs)
         })
 })
+
+blogsRouter.get('/:id', (request, response) => {
+    const id = request.params.id
+    Blog
+        .findById(id)
+        .then(blog => {
+            logger.info('retuend is: ', blog)
+            if (blog !== null) {
+                response.json(blog)
+            } else {
+                response.status(400).json({error: 'id not found'})
+            }
+        })
+})
+
+blogsRouter.put('/:id', (request, response) => {
+    const id = request.params.id
+    logger.info(request.body)
+    const newBlog = {
+        title: request.body.title,
+        author: request.body.author,
+        url: request.body.url,
+        likes: request.body.likes ? Number(request.body.likes) : 0
+    }
+
+    Blog
+        .findByIdAndUpdate(id, newBlog, {new: true})
+        .then( updatedBlog => response.json(updatedBlog.toJSON()))
+        .catch(error => logger.error(error))
+})
   
 blogsRouter.post('/', (request, response) => {
     const body = request.body
-
+    if (!body.author || !body.title) {
+        response.status(400).json({error: 'author and title must be set'})
+        return
+    }
     const blog = new Blog({
         title: body.title,
         author: body.author,
         url: body.url,
-        likes: body.likes
+        likes: body.likes ? body.likes : 0
     })
     blog
         .save()
@@ -27,4 +60,15 @@ blogsRouter.post('/', (request, response) => {
         .catch(error => logger.error(error))
 })
 
+blogsRouter.delete('/:id', async (request, response) => {
+    const id = request.params.id
+    try {
+        logger.info('id: ',id)
+        await Blog.findByIdAndRemove(id)
+        response.status(204).end()
+    } catch (error) {
+        logger.error(error)
+    }
+    
+})
 module.exports = blogsRouter
