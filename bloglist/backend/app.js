@@ -3,6 +3,7 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 const blogsRouter = require('./controllers/blogsRouter')
+const usersRouter = require('./controllers/usersRouter')
 const middleware = require('./utils/middleware')
 const morgan = require('morgan')
 const morganStyle = 'tiny'
@@ -23,7 +24,7 @@ app.use(express.json())
 app.use(morgan(morganStyle))
 
 app.use('/api/blogs', blogsRouter)
-
+app.use('/api/users', usersRouter)
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 module.exports = app

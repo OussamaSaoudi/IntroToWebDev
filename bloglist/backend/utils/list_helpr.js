@@ -1,3 +1,9 @@
+const User = require('../models/user')
+
+const usersInDb = async () => {
+    const users = await User.find({})
+    return users.map(u => u.toJSON())
+}
 const totalLikes = (blogs) => blogs.reduce((sum, item) => sum + item.likes, 0)
 
 const favoriteBlog = (blogs) => {
@@ -58,5 +64,6 @@ const initialBlogs = [
 module.exports = {
     totalLikes,
     favoriteBlog,
-    initialBlogs
+    initialBlogs,
+    usersInDb
 }

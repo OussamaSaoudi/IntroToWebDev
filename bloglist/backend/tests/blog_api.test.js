@@ -5,6 +5,8 @@ const supertest = require('supertest')
 const app = require('../app')
 const api = supertest(app)
 
+const bcrypt = require('bcrypt')
+const User = require('../models/user')
 const Blog = require('../models/blog')
 const helper = require('../utils/list_helpr')
 beforeEach(async () => {
@@ -66,6 +68,8 @@ describe('POST', () => {
         await api
             .post('/api/blogs')
             .send(newBlog)
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
 
         const response = await api
             .get('/api/blogs')
@@ -93,6 +97,7 @@ describe('POST', () => {
             .post('/api/blogs')
             .send(newBlog)
             .expect(400)
+            .expect('Content-Type', /application\/json/)
     })
 
     test('no author gives 400', async () => {
@@ -106,6 +111,7 @@ describe('POST', () => {
             .post('/api/blogs')
             .send(newBlog)
             .expect(400)
+            .expect('Content-Type', /application\/json/)
     })
 })
 
@@ -125,6 +131,32 @@ describe('Correctness', () => {
         
         const returnedBlog = response.body.filter(blog => blog.title === 'My first blog')
         expect(returnedBlog[0].likes).toBe(0)
+    })
+})
+
+describe('User', () => {
+    test('Name must be min 3 length', async () => {
+        const newUser = {
+            username: 'a',
+            name: 'Oussama',
+            password: 'testPass'
+        }
+        await api
+            .post('/api/users')
+            .send(newUser)
+            .expect(400)
+    })
+    test('Name must be min 3 length', async () => {
+        const newUser = {
+            username: 'Oussama',
+            name: 'a',
+            password: 'testPass'
+        }
+        await api
+            .post('/api/users')
+            .send(newUser)
+            .expect(400)
+            .end()
     })
 })
 

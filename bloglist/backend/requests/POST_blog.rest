@@ -2,8 +2,9 @@ POST http://localhost:3003/api/blogs
 Content-Type:application/json
 
 {
-    "title": "My first blog",
-    "author": "Me",
+    "title": "Blog f  ",
+    "author": "The one   it out",
     "url": "oussamasaoudi.com",
-    "likes": 3
+    "likes": 3,
+    "userId": "6093e2e3f30c67d0a5cf3316"
 }
