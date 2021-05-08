@@ -1,0 +1,33 @@
+import axios from 'axios'
+const baseUrl = '/api/blogs'
+
+let token = null
+const setToken = (newToken) => {
+  token = `bearer ${newToken}`
+}
+const getAll = () => {
+  const request = axios.get(baseUrl)
+  return request.then(response => response.data)
+}
+const postBlog = async (title, author, url, notifBanSetter) => {
+  const config = {
+    headers: { Authorization: token}
+  }
+  try {
+    await axios
+      .post(
+        baseUrl,
+        {
+          title: title,
+          author: author,
+          url: url
+        },
+        config
+      )
+    notifBanSetter(title)
+  } catch (error) {
+    notifBanSetter(error.response.data.error)
+  }
+}
+// eslint-disable-next-line import/no-anonymous-default-export
+export default { getAll, postBlog, setToken }
